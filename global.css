@@ -1,0 +1,21 @@
+body {
+    margin: 0;
+    height: 100vh;
+    width: 100vw;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: black;
+}
+
+.text {
+    color: white;
+    font-family: sans-serif;
+}
+
+#name {
+    font-weight: bold;
+    font-size: 8em;
+    scale: 8;
+}
