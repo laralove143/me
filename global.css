@@ -19,6 +19,8 @@ body {
   font-weight: bold;
   font-size: 8em;
   scale: 16;
+  background-clip: text;
+  -webkit-background-clip: text;
 }
 
 #scrollIndicator {
