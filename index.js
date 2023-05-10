@@ -10,19 +10,44 @@ class ScrollElem {
     }
 }
 
+class ScrollIndicator {
+    constructor(id) {
+        this.shown = true;
+        this.elem = document.getElementById(id);
+    }
+
+    showLater() {
+        setTimeout(() => {
+            this.shown = true;
+            this.elem.style.bottom = "1em";
+        }, 5_000);
+    }
+
+    hide() {
+        this.shown = false;
+        this.elem.style.bottom = "-3em";
+        this.showLater();
+    }
+}
+
 class ScrollHandler {
     constructor(elems) {
+        this.indicator = new ScrollIndicator("scrollIndicator");
         this.elems = elems;
     }
 
     addListener() {
         document.addEventListener("wheel", (wheel) => {
+            if (this.indicator.shown) {
+                this.indicator.hide();
+            }
+
             const scrollNext = this.elems.find(elem => elem.isDone === false);
             if (scrollNext === undefined) {
                 return;
             }
             scrollNext.onScroll(scrollNext.elem, wheel.deltaY / 100);
-        })
+        });
     }
 }
 
@@ -33,8 +58,8 @@ const name = new ScrollElem("name", (elem, delta) => {
     if (elem.scale <= 1) {
         elem.scale = 1;
         name.done();
-    } else if (elem.scale >= 8) {
-        elem.scale = 8;
+    } else if (elem.scale >= 16) {
+        elem.scale = 16;
     }
 
     elem.style.scale = elem.scale;

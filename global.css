@@ -4,18 +4,37 @@ body {
     width: 100vw;
     overflow: hidden;
     display: flex;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
+    color: white;
     background: black;
 }
 
 .text {
-    color: white;
     font-family: sans-serif;
 }
 
 #name {
     font-weight: bold;
     font-size: 8em;
-    scale: 8;
+    scale: 16;
+}
+
+#scrollIndicator {
+    display: flex;
+    align-items: center;
+    position: absolute;
+    bottom: 1em;
+    padding: 0.5em;
+    color: gray;
+    background: white;
+    border-radius: 8px;
+    transition: bottom 0.5s;
+}
+
+#scrollIndicatorIcon {
+    display: block;
+    height: 2em;
+    margin-right: 0.25em;
 }
