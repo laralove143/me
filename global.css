@@ -17,7 +17,7 @@ body {
 
 #name {
   font-weight: bold;
-  font-size: 8em;
+  font-size: 8rem;
   scale: 16;
   background-clip: text;
   -webkit-background-clip: text;
@@ -27,8 +27,8 @@ body {
   display: flex;
   align-items: center;
   position: absolute;
-  bottom: 1em;
-  padding: 0.5em;
+  bottom: 1rem;
+  padding: 0.5rem;
   color: gray;
   background: white;
   border-radius: 8px;
@@ -37,6 +37,6 @@ body {
 
 #scrollIndicatorIcon {
   display: block;
-  height: 2em;
-  margin-right: 0.25em;
+  height: 2rem;
+  margin-right: 0.25rem;
 }
