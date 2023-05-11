@@ -90,7 +90,7 @@ class ScrollHandler {
 const nameScale = new ScrollElem("name", (elem, delta) => {
   if (elem.scale === undefined) {
     elem.scale = window.getComputedStyle(elem).scale;
-    elem.style.display = "block";
+    elem.style.opacity = 1;
   }
   elem.scale -= delta / 2;
 

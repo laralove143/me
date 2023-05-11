@@ -16,14 +16,13 @@ body {
 }
 
 #name {
-  display: none;
+  opacity: 0;
   font-weight: bold;
   font-size: 8rem;
   scale: 16;
   background-clip: text;
   -webkit-background-clip: text;
-  animation-name: fade-in;
-  animation-duration: 1s;
+  transition: opacity 0.5s;
 }
 
 #scrollIndicator {
@@ -42,13 +41,4 @@ body {
   display: block;
   height: 2rem;
   margin-right: 0.25rem;
-}
-
-@keyframes fade-in {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
 }
