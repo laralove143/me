@@ -89,19 +89,19 @@ class ScrollHandler {
 
 const nameScale = new ScrollElem("name", (elem, delta) => {
   if (elem.scale === undefined) {
-    elem.scale = window.getComputedStyle(elem).scale;
-    elem.style.opacity = 1;
+    elem.scale = getComputedStyle(elem).fontSize.slice(0, -3);
+    elem.style.opacity = "1";
   }
-  elem.scale -= delta / 2;
+  elem.scale -= delta * 4;
 
-  if (elem.scale <= 1) {
-    elem.scale = 1;
+  if (elem.scale <= 8) {
+    elem.scale = 8;
     nameScale.done();
-  } else if (elem.scale >= 16) {
-    elem.scale = 16;
+  } else if (elem.scale >= 128) {
+    elem.scale = 128;
   }
 
-  elem.style.scale = elem.scale;
+  elem.style.fontSize = `${elem.scale}rem`;
 });
 
 const namePrideColors = new ScrollElem("name", (elem, delta) => {
