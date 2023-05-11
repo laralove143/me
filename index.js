@@ -88,7 +88,10 @@ class ScrollHandler {
 }
 
 const nameScale = new ScrollElem("name", (elem, delta) => {
-  elem.scale = elem.scale ?? window.getComputedStyle(elem).scale;
+  if (elem.scale === undefined) {
+    elem.scale = window.getComputedStyle(elem).scale;
+    elem.style.display = "block";
+  }
   elem.scale -= delta / 2;
 
   if (elem.scale <= 1) {
