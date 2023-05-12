@@ -68,6 +68,7 @@ class ColorsScrollElem extends ScrollElem {
     super(id, (elem, delta) => {
       if (!this.hasStarted) {
         this.elem.style.color = "transparent";
+        this.hasStarted = true;
       }
 
       const nextColor = this.colors.find(
