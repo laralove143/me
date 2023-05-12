@@ -106,7 +106,6 @@ class ColorsScrollElem extends ScrollElem {
       }),
       new Color("#FFFFFF", 0, 100),
     ];
-    console.log(this.colors);
   }
 }
 
