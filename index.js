@@ -40,7 +40,7 @@ class ScrollHandler {
 }
 
 class ScaleScrollElem extends ScrollElem {
-  constructor(id, isText, factor, targetScale) {
+  constructor(id, isText, factor, startScale, targetScale) {
     super(id, (elem, delta) => {
       if (!this.hasStarted) {
         this.elem.style.opacity = "1";
@@ -64,9 +64,7 @@ class ScaleScrollElem extends ScrollElem {
     });
 
     this.hasStarted = false;
-    this.maxScale = isText
-      ? parseFloat(getComputedStyle(this.elem).fontSize.slice(0, -3))
-      : parseFloat(getComputedStyle(this.elem).scale) || 1;
+    this.maxScale = startScale;
     this.scale = this.maxScale;
   }
 }
@@ -132,10 +130,11 @@ const scrollIndicatorScale = new ScaleScrollElem(
   "scrollIndicator",
   false,
   0.25,
+  1,
   0
 );
 
-const nameScale = new ScaleScrollElem("name", true, 8, 20);
+const nameScale = new ScaleScrollElem("name", true, 8, 340, 20);
 
 const namePrideColors = new ColorsScrollElem("name", [
   "#732982",

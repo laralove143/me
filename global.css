@@ -18,7 +18,6 @@ body {
 #name {
   opacity: 0;
   font-weight: bold;
-  font-size: 400vw;
   background-clip: text;
   -webkit-background-clip: text;
   transition: opacity 0.5s;
