@@ -32,10 +32,15 @@ class ScrollHandler {
       this.lastTouchY = touch.touches[0].pageY;
     });
 
-    document.addEventListener("touchmove", (touch) => {
-      this.scroll((this.lastTouchY - touch.touches[0].pageY) / 25);
-      this.lastTouchY = touch.touches[0].pageY;
-    });
+    document.addEventListener(
+      "touchmove",
+      (touch) => {
+        touch.preventDefault();
+        this.scroll((this.lastTouchY - touch.touches[0].pageY) / 10);
+        this.lastTouchY = touch.touches[0].pageY;
+      },
+      { passive: false }
+    );
   }
 }
 
