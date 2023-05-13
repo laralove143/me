@@ -7,13 +7,15 @@ class ScrollIndicator {
   showLater() {
     setTimeout(() => {
       this.shown = true;
-      this.elem.style.bottom = "1em";
+      this.elem.style.bottom = "2vh";
+      this.elem.style.opacity = "1";
     }, 5_000);
   }
 
   hide() {
     this.shown = false;
-    this.elem.style.bottom = "-3em";
+    this.elem.style.bottom = "-6vh";
+    this.elem.style.opacity = "0";
     this.showLater();
   }
 }
@@ -36,17 +38,30 @@ class ScrollHandler {
     this.elems = elems;
   }
 
+  scroll(delta) {
+    if (this.indicator.shown) {
+      this.indicator.hide();
+    }
+
+    const scrollNext = this.elems.find((elem) => elem.isDone === false);
+    if (scrollNext === undefined) {
+      return;
+    }
+    scrollNext.onScroll(scrollNext.elem, delta);
+  }
+
   addListener() {
     document.addEventListener("wheel", (wheel) => {
-      if (this.indicator.shown) {
-        this.indicator.hide();
-      }
+      this.scroll(wheel.deltaY / 100);
+    });
 
-      const scrollNext = this.elems.find((elem) => elem.isDone === false);
-      if (scrollNext === undefined) {
-        return;
-      }
-      scrollNext.onScroll(scrollNext.elem, wheel.deltaY / 100);
+    document.addEventListener("touchstart", (touch) => {
+      this.lastTouchY = touch.touches[0].pageY;
+    });
+
+    document.addEventListener("touchmove", (touch) => {
+      this.scroll((this.lastTouchY - touch.touches[0].pageY) / 10);
+      this.lastTouchY = touch.touches[0].pageY;
     });
   }
 }
@@ -116,14 +131,14 @@ const nameScale = new ScrollElem("name", (elem, delta) => {
   }
   elem.scale -= delta * 4;
 
-  if (elem.scale <= 8) {
-    elem.scale = 8;
+  if (elem.scale <= 20) {
+    elem.scale = 20;
     nameScale.done();
-  } else if (elem.scale >= 128) {
-    elem.scale = 128;
+  } else if (elem.scale >= 200) {
+    elem.scale = 200;
   }
 
-  elem.style.fontSize = `${elem.scale}rem`;
+  elem.style.fontSize = `${elem.scale}vw`;
 });
 
 const namePrideColors = new ColorsScrollElem("name", [

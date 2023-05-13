@@ -18,7 +18,7 @@ body {
 #name {
   opacity: 0;
   font-weight: bold;
-  font-size: 128rem;
+  font-size: 400vw;
   background-clip: text;
   -webkit-background-clip: text;
   transition: opacity 0.5s;
@@ -28,16 +28,18 @@ body {
   display: flex;
   align-items: center;
   position: absolute;
-  bottom: 1rem;
-  padding: 0.5rem;
+  font-size: 2vh;
+  bottom: 2vh;
+  opacity: 1;
+  padding: 1vh;
   color: gray;
   background: white;
   border-radius: 8px;
-  transition: bottom 0.5s;
+  transition: bottom 0.5s, opacity 0.5s;
 }
 
 #scrollIndicatorIcon {
   display: block;
-  height: 2rem;
-  margin-right: 0.25rem;
+  height: 4vh;
+  margin-right: 0.5vh;
 }
