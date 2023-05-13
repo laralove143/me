@@ -29,13 +29,11 @@ body {
   align-items: center;
   position: absolute;
   font-size: 2vh;
-  bottom: 2vh;
   opacity: 1;
   padding: 1vh;
   color: gray;
   background: white;
   border-radius: 8px;
-  transition: bottom 0.5s, opacity 0.5s;
 }
 
 #scrollIndicatorIcon {

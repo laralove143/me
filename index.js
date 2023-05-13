@@ -1,25 +1,3 @@
-class ScrollIndicator {
-  constructor(id) {
-    this.shown = true;
-    this.elem = document.getElementById(id);
-  }
-
-  showLater() {
-    setTimeout(() => {
-      this.shown = true;
-      this.elem.style.bottom = "2vh";
-      this.elem.style.opacity = "1";
-    }, 5_000);
-  }
-
-  hide() {
-    this.shown = false;
-    this.elem.style.bottom = "-6vh";
-    this.elem.style.opacity = "0";
-    this.showLater();
-  }
-}
-
 class ScrollElem {
   constructor(id, onScroll) {
     this.elem = document.getElementById(id);
@@ -34,15 +12,10 @@ class ScrollElem {
 
 class ScrollHandler {
   constructor(elems) {
-    this.indicator = new ScrollIndicator("scrollIndicator");
     this.elems = elems;
   }
 
   scroll(delta) {
-    if (this.indicator.shown) {
-      this.indicator.hide();
-    }
-
     const scrollNext = this.elems.find((elem) => elem.isDone === false);
     if (scrollNext === undefined) {
       return;
@@ -60,9 +33,41 @@ class ScrollHandler {
     });
 
     document.addEventListener("touchmove", (touch) => {
-      this.scroll((this.lastTouchY - touch.touches[0].pageY) / 10);
+      this.scroll((this.lastTouchY - touch.touches[0].pageY) / 25);
       this.lastTouchY = touch.touches[0].pageY;
     });
+  }
+}
+
+class ScaleScrollElem extends ScrollElem {
+  constructor(id, isText, factor, targetScale) {
+    super(id, (elem, delta) => {
+      if (!this.hasStarted) {
+        this.elem.style.opacity = "1";
+        this.hasStarted = true;
+      }
+
+      this.scale -= delta * factor;
+
+      if (this.scale <= targetScale) {
+        this.scale = targetScale;
+        this.done();
+      } else if (this.scale >= this.maxScale) {
+        this.scale = this.maxScale;
+      }
+
+      if (isText) {
+        elem.style.fontSize = `${this.scale}vw`;
+      } else {
+        elem.style.scale = this.scale;
+      }
+    });
+
+    this.hasStarted = false;
+    this.maxScale = isText
+      ? parseFloat(getComputedStyle(this.elem).fontSize.slice(0, -3))
+      : parseFloat(getComputedStyle(this.elem).scale) || 1;
+    this.scale = this.maxScale;
   }
 }
 
@@ -109,7 +114,6 @@ class ColorsScrollElem extends ScrollElem {
     });
 
     this.hasStarted = false;
-    this.elem = document.getElementById(id);
     this.colors = [
       new Color("#FFFFFF", 100, 100),
       ...colorCodes.map((code, idx) => {
@@ -124,22 +128,14 @@ class ColorsScrollElem extends ScrollElem {
   }
 }
 
-const nameScale = new ScrollElem("name", (elem, delta) => {
-  if (elem.scale === undefined) {
-    elem.scale = getComputedStyle(elem).fontSize.slice(0, -3);
-    elem.style.opacity = "1";
-  }
-  elem.scale -= delta * 4;
+const scrollIndicatorScale = new ScaleScrollElem(
+  "scrollIndicator",
+  false,
+  0.25,
+  0
+);
 
-  if (elem.scale <= 20) {
-    elem.scale = 20;
-    nameScale.done();
-  } else if (elem.scale >= 200) {
-    elem.scale = 200;
-  }
-
-  elem.style.fontSize = `${elem.scale}vw`;
-});
+const nameScale = new ScaleScrollElem("name", true, 8, 20);
 
 const namePrideColors = new ColorsScrollElem("name", [
   "#732982",
@@ -157,4 +153,9 @@ const nameNbColors = new ColorsScrollElem("name", [
   "#FCF434",
 ]);
 
-new ScrollHandler([nameScale, namePrideColors, nameNbColors]).addListener();
+new ScrollHandler([
+  scrollIndicatorScale,
+  nameScale,
+  namePrideColors,
+  nameNbColors,
+]).addListener();
