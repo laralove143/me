@@ -41,6 +41,18 @@ class ScrollHandler {
       },
       { passive: false }
     );
+
+    document.addEventListener("touchend", () => {
+      let scrollCount = 10;
+      const scrollIntervalId = setInterval(() => {
+        if (scrollCount > 100) {
+          clearInterval(scrollIntervalId);
+          return;
+        }
+        this.scroll(1 / scrollCount);
+        scrollCount++;
+      }, 0.5);
+    });
   }
 }
 
