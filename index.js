@@ -29,28 +29,42 @@ class ScrollHandler {
     });
 
     document.addEventListener("touchstart", (touch) => {
-      this.lastTouchY = touch.touches[0].pageY;
+      this.lastTouches = [touch.touches[0].pageY];
     });
 
     document.addEventListener(
       "touchmove",
       (touch) => {
         touch.preventDefault();
-        this.scroll((this.lastTouchY - touch.touches[0].pageY) / 10);
-        this.lastTouchY = touch.touches[0].pageY;
+
+        this.lastTouches.push(touch.touches[0].pageY);
+        this.lastTouches = this.lastTouches.slice(-2);
+
+        this.scroll(
+          (this.lastTouches[this.lastTouches.length - 2] -
+            this.lastTouches[this.lastTouches.length - 1]) /
+            10
+        );
       },
       { passive: false }
     );
 
     document.addEventListener("touchend", () => {
-      let scrollCount = 10;
+      let scrollCount = 0;
       const scrollIntervalId = setInterval(() => {
+        scrollCount++;
+
         if (scrollCount > 100) {
           clearInterval(scrollIntervalId);
           return;
         }
-        this.scroll(1 / scrollCount);
-        scrollCount++;
+
+        this.scroll(
+          (this.lastTouches[this.lastTouches.length - 2] -
+            this.lastTouches[this.lastTouches.length - 1]) /
+            (scrollCount + 10) /
+            10
+        );
       }, 0.5);
     });
   }
