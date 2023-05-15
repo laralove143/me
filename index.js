@@ -50,6 +50,10 @@ class ScrollHandler {
     );
 
     document.addEventListener("touchend", () => {
+      const delta =
+        this.lastTouches[this.lastTouches.length - 2] -
+        this.lastTouches[this.lastTouches.length - 1];
+
       let scrollCount = 0;
       const scrollIntervalId = setInterval(() => {
         scrollCount++;
@@ -59,12 +63,7 @@ class ScrollHandler {
           return;
         }
 
-        this.scroll(
-          (this.lastTouches[this.lastTouches.length - 2] -
-            this.lastTouches[this.lastTouches.length - 1]) /
-            (scrollCount + 10) /
-            10
-        );
+        this.scroll(delta / (scrollCount + 10) / 10);
       }, 0.5);
     });
   }
