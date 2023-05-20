@@ -14,10 +14,22 @@ body {
 
 #name {
   opacity: 0;
+  white-space: nowrap;
+  font-size: 8vw;
   font-weight: bold;
   background-clip: text;
   -webkit-background-clip: text;
   transition: opacity 0.5s;
+}
+
+#nameHoverContent {
+  white-space: nowrap;
+  position: absolute;
+  top: 0;
+  -webkit-text-stroke: 0.2vw red;
+  color: red;
+  overflow: hidden;
+  transition: width 0.3s ease;
 }
 
 #scrollIndicator {

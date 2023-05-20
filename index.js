@@ -15,8 +15,12 @@ class ScrollHandler {
     this.elems = elems;
   }
 
+  scrollNext() {
+    return this.elems.find((elem) => elem.isDone === false);
+  }
+
   scroll(delta) {
-    const scrollNext = this.elems.find((elem) => elem.isDone === false);
+    const scrollNext = this.scrollNext();
     if (scrollNext === undefined) {
       return;
     }
@@ -156,6 +160,33 @@ class ColorsScrollElem extends ScrollElem {
   }
 }
 
+class NameHover {
+  constructor(triggerId, containerId, contentId) {
+    this.trigger = document.getElementById(triggerId);
+    this.container = document.getElementById(containerId);
+    this.content = document.getElementById(contentId);
+
+    // TODO: do this on browser resize and zoom
+    this.content.style.left = `-${
+      this.trigger.getBoundingClientRect().width
+    }px`;
+    this.targetWidth = `${this.content.offsetWidth}px`;
+    this.content.style.width = "0";
+  }
+
+  addListener() {
+    this.container.style.position = "relative";
+
+    this.trigger.addEventListener("mouseenter", () => {
+      this.content.style.width = this.targetWidth;
+    });
+
+    this.trigger.addEventListener("mouseleave", () => {
+      this.content.style.width = "0";
+    });
+  }
+}
+
 const scrollIndicatorScale = new ScaleScrollElem(
   "scrollIndicator",
   false,
@@ -164,7 +195,13 @@ const scrollIndicatorScale = new ScaleScrollElem(
   0
 );
 
-const nameScale = new ScaleScrollElem("name", true, 8, 340, 20);
+const nameHover = new NameHover(
+  "nameHoverTrigger",
+  "nameHoverContainer",
+  "nameHoverContent"
+);
+
+const nameScale = new ScaleScrollElem("name", true, 8, 340, 8);
 
 const namePrideColors = new ColorsScrollElem("name", [
   "#732982",
@@ -182,9 +219,19 @@ const nameNbColors = new ColorsScrollElem("name", [
   "#FCF434",
 ]);
 
-new ScrollHandler([
+const scrollHandler = new ScrollHandler([
   scrollIndicatorScale,
   nameScale,
   namePrideColors,
   nameNbColors,
-]).addListener();
+]);
+
+scrollHandler.addListener();
+
+const scrollDoneCheckIntervalId = setInterval(() => {
+  if (scrollHandler.scrollNext() === undefined) {
+    clearInterval(scrollDoneCheckIntervalId);
+
+    nameHover.addListener();
+  }
+}, 100);
