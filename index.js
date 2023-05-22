@@ -214,7 +214,10 @@ class NameHover {
   }
 
   addListener() {
-    const factor = 10;
+    const factor =
+      new URLSearchParams(document.location.search).get("imEylul") !== null
+        ? 1000
+        : 10;
 
     this.trigger.elem.addEventListener("mouseenter", () => {
       this.trigger.isForward = true;
