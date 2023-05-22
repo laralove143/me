@@ -116,26 +116,58 @@ class Color {
 }
 
 class ColorsScrollElem extends ScrollElem {
-  constructor(id, colorCodes) {
+  constructor(id, colorCodes, isReversed, endColorCode) {
     super(id, (elem, delta) => {
       if (!this.hasStarted) {
         this.elem.style.color = "transparent";
         this.hasStarted = true;
       }
 
-      const nextColor = this.colors.find(
-        (color) => color.percentage !== color.targetPercentage
-      );
+      if (this.isForward) {
+        this.isBackwardDone = false;
+      } else {
+        this.isDone = false;
+      }
+
+      let nextColor;
+      if (this.isForward) {
+        nextColor = this.colors.find(
+          (color) => color.percentage !== color.targetPercentage
+        );
+      } else {
+        for (let i = this.colors.length - 1; i > 0; i--) {
+          if (this.colors[i].percentage !== 0) {
+            nextColor = this.colors[i];
+            break;
+          }
+        }
+      }
+
       if (nextColor === undefined) {
-        this.done();
+        if (this.isForward) {
+          this.done();
+        } else {
+          this.isBackwardDone = true;
+        }
         return;
       }
 
-      nextColor.percentage += delta * 4;
-      if (nextColor.percentage > nextColor.targetPercentage) {
-        nextColor.percentage = nextColor.targetPercentage;
-      } else if (nextColor.percentage < 0) {
-        nextColor.percentage = 0;
+      delta *= 4;
+
+      if (this.isForward) {
+        nextColor.percentage += delta;
+        if (nextColor.percentage > nextColor.targetPercentage) {
+          nextColor.percentage = nextColor.targetPercentage;
+        } else if (nextColor.percentage < 0) {
+          nextColor.percentage = 0;
+        }
+      } else {
+        nextColor.percentage -= delta;
+        if (nextColor.percentage < 0) {
+          nextColor.percentage = 0;
+        } else if (nextColor > 100) {
+          nextColor.percentage = 100;
+        }
       }
 
       const colorsCss = this.colors
@@ -145,9 +177,11 @@ class ColorsScrollElem extends ScrollElem {
       elem.style.backgroundImage = `linear-gradient(to right, ${colorsCss})`;
     });
 
+    this.isForward = true;
+    this.isBackwardDone = false;
     this.hasStarted = false;
     this.colors = [
-      new Color("#FFFFFF", 100, 100),
+      new Color(endColorCode, 100, 100),
       ...colorCodes.map((code, idx) => {
         return new Color(
           code,
@@ -155,34 +189,79 @@ class ColorsScrollElem extends ScrollElem {
           (100 / colorCodes.length) * (colorCodes.length - idx)
         );
       }),
-      new Color("#FFFFFF", 0, 100),
     ];
+
+    if (isReversed) {
+      this.colors.push(new Color("#FFFFFF", 0, 100));
+    }
   }
 }
 
 class NameHover {
   constructor(triggerId, containerId, contentId) {
-    this.trigger = document.getElementById(triggerId);
-    this.container = document.getElementById(containerId);
-    this.content = document.getElementById(contentId);
-
-    // TODO: do this on browser resize and zoom
-    this.content.style.left = `-${
-      this.trigger.getBoundingClientRect().width
-    }px`;
-    this.targetWidth = `${this.content.offsetWidth}px`;
-    this.content.style.width = "0";
+    this.trigger = new ColorsScrollElem(
+      triggerId,
+      ["#FF0000"],
+      false,
+      "#FFFFFF"
+    );
+    this.content = new ColorsScrollElem(
+      contentId,
+      ["#FF0000"],
+      false,
+      "transparent"
+    );
   }
 
   addListener() {
-    this.container.style.position = "relative";
+    const factor = 10;
 
-    this.trigger.addEventListener("mouseenter", () => {
-      this.content.style.width = this.targetWidth;
+    this.trigger.elem.addEventListener("mouseenter", () => {
+      this.trigger.isForward = true;
+      this.content.isForward = true;
+
+      if (this.fillBackwardIntervalId !== undefined) {
+        clearInterval(this.fillBackwardIntervalId);
+      }
+
+      this.fillForwardIntervalId = setInterval(() => {
+        if (!this.trigger.isDone) {
+          this.trigger.onScroll(
+            this.trigger.elem,
+            factor * (this.content.elem.offsetWidth / window.innerWidth)
+          );
+        } else {
+          this.content.elem.style.visibility = "visible";
+          this.content.onScroll(
+            this.content.elem,
+            factor * (this.trigger.elem.offsetWidth / window.innerWidth)
+          );
+        }
+      }, 15);
     });
 
-    this.trigger.addEventListener("mouseleave", () => {
-      this.content.style.width = "0";
+    this.trigger.elem.addEventListener("mouseleave", () => {
+      this.trigger.isForward = false;
+      this.content.isForward = false;
+
+      if (this.fillForwardIntervalId !== undefined) {
+        clearInterval(this.fillForwardIntervalId);
+      }
+
+      this.fillBackwardIntervalId = setInterval(() => {
+        if (!this.content.isBackwardDone) {
+          this.content.onScroll(
+            this.content.elem,
+            factor * (this.trigger.elem.offsetWidth / window.innerWidth)
+          );
+        } else {
+          this.content.elem.style.visibility = "hidden";
+          this.trigger.onScroll(
+            this.trigger.elem,
+            factor * (this.content.elem.offsetWidth / window.innerWidth)
+          );
+        }
+      }, 15);
     });
   }
 }
@@ -203,21 +282,19 @@ const nameHover = new NameHover(
 
 const nameScale = new ScaleScrollElem("name", true, 8, 340, 8);
 
-const namePrideColors = new ColorsScrollElem("name", [
-  "#732982",
-  "#24408E",
-  "#008026",
-  "#FFED00",
-  "#FF8C00",
-  "#E40303",
-]);
+const namePrideColors = new ColorsScrollElem(
+  "name",
+  ["#732982", "#24408E", "#008026", "#FFED00", "#FF8C00", "#E40303"],
+  true,
+  "#FFFFFF"
+);
 
-const nameNbColors = new ColorsScrollElem("name", [
-  "#2C2C2C",
-  "#9C59D1",
-  "#FFFFFF",
-  "#FCF434",
-]);
+const nameNbColors = new ColorsScrollElem(
+  "name",
+  ["#2C2C2C", "#9C59D1", "#FFFFFF", "#FCF434"],
+  true,
+  "#FFFFFF"
+);
 
 const scrollHandler = new ScrollHandler([
   scrollIndicatorScale,

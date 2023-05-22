@@ -22,14 +22,21 @@ body {
   transition: opacity 0.5s;
 }
 
+#nameHoverTrigger {
+  background-clip: text;
+  -webkit-background-clip: text;
+}
+
+#nameHoverContainer {
+  position: relative;
+}
+
 #nameHoverContent {
-  white-space: nowrap;
+  visibility: hidden;
   position: absolute;
   top: 0;
-  -webkit-text-stroke: 0.2vw red;
-  color: red;
-  overflow: hidden;
-  transition: width 0.3s ease;
+  background-clip: text;
+  -webkit-background-clip: text;
 }
 
 #scrollIndicator {
